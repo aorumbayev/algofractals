@@ -1,6 +1,7 @@
 <template>
     <canvas
         class="fcanvas"
+        id="fractalsCanvas"
         tabindex="-1"
         :width="state.width"
         :height="state.height"
@@ -43,8 +44,8 @@ const optionsDefault = {
     height: 500,
     x: x_range_array[range_pick],
     y: y_range_array[range_pick],
-    zoom: randomBetween(1100, 11600),
-    resolution: 10000,
+    zoom: randomBetween(1000, 41600),
+    resolution: 3000,
     palette: getColor.bw,
 };
 
@@ -63,7 +64,6 @@ export default {
         }
         this.state = { ...optionsDefault, ...this.value };
         this.getState = () => this.state;
-        this.context.scale();
     },
 };
 </script>

@@ -20,7 +20,7 @@ export default {
             x: -1.37215516,
             y: 0.0109641665,
             zoom: 498788,
-            resolution: 300,
+            resolution: 2000,
             palette: getColor.wk,
         },
         drawing: "",
