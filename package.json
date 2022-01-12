@@ -1,0 +1,46 @@
+{
+    "name": "algofractalss",
+    "version": "0.1.0",
+    "scripts": {
+        "dev": "vite --host",
+        "build": "vite build",
+        "serve": "vite preview"
+    },
+    "dependencies": {
+        "@json-rpc-tools/utils": "1.7.6",
+        "@randlabs/myalgo-connect": "^1.1.2",
+        "@walletconnect/client": "1.7.1",
+        "algorand-walletconnect-qrcode-modal": "1.6.1",
+        "algosdk": "1.12.0",
+        "buffer": "6.0.3",
+        "daisyui": "^1.22.0",
+        "ipfs-http-client": "^55.0.0",
+        "lodash": "^4.17.21",
+        "mitt": "^3.0.0",
+        "particles.vue3": "^1.22.0",
+        "pipeline-express-react": "^1.0.9",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "tslib": "^2.3.1",
+        "uuidv4": "^6.2.12",
+        "vue": "^3.2.26",
+        "vue-plugin-load-script": ">=2.0.0",
+        "vue-router": "^4.0.12",
+        "vuera": "^0.2.7",
+        "web3": "^1.6.1"
+    },
+    "devDependencies": {
+        "@headlessui/vue": "1.4.2",
+        "@heroicons/vue": "1.0.5",
+        "@tailwindcss/aspect-ratio": "0.4.0",
+        "@tailwindcss/forms": "0.4.0",
+        "@tailwindcss/line-clamp": "0.3.0",
+        "@tailwindcss/typography": "0.5.0",
+        "@types/tailwindcss": "3.0.2",
+        "@vitejs/plugin-vue": "2.0.1",
+        "autoprefixer": "10.4.2",
+        "tailwindcss": "3.0.12",
+        "vite": "2.7.10",
+        "worker-loader": "^3.0.8"
+    }
+}
