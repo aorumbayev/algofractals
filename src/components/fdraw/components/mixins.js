@@ -1,23 +1,9 @@
 import FWorker from "../services/fworker.js?worker";
 import Interactions from "../services/interactions";
-import algosdk from "algosdk";
+import { CARD_TITLE } from "../../../common/constants.js";
+import getColor from "../services/getColor.js";
 
-const cyrb53 = function (str, seed = 0) {
-    let h1 = 0xdeadbeef ^ seed,
-        h2 = 0x41c6ce57 ^ seed;
-    for (let i = 0, ch; i < str.length; i++) {
-        ch = str.charCodeAt(i);
-        h1 = Math.imul(h1 ^ ch, 2654435761);
-        h2 = Math.imul(h2 ^ ch, 1597334677);
-    }
-    h1 =
-        Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^
-        Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-    h2 =
-        Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^
-        Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-};
+const FONTS = ["Spicy Rice", "Chicle", "Shrikhand"];
 
 export default {
     props: ["value"],
@@ -28,8 +14,24 @@ export default {
 
             const context = this.$el.getContext("2d");
             const params = this.getState();
-            const image = context.createImageData(500, 500);
+            const image = context.createImageData(1400, 1400);
             this.fworker.postMessage({ image, params });
+        },
+        componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+        },
+
+        rgbToHex(r, g, b) {
+            return (
+                "#" +
+                this.componentToHex(r) +
+                this.componentToHex(g) +
+                this.componentToHex(b)
+            );
+        },
+        getRandomFont() {
+            return FONTS[Math.floor(Math.random() * FONTS.length)];
         },
     },
     mounted() {
@@ -38,22 +40,30 @@ export default {
         this.fworker.onmessage = (e) => {
             const context = this.$el.getContext("2d");
             context.putImageData(e.data.image, 0, 0);
+            const params = this.getState();
 
-            context.fillStyle = "white";
+            const randFill = getColor.bw[Math.floor(Math.random() * 9)];
+            context.fillStyle = this.rgbToHex(
+                randFill.r,
+                randFill.g,
+                randFill.b
+            );
             context.strokeStyle = "black";
-            context.strokeWidth = 15;
 
-            context.font = "15pt AvenirNext-Bold";
-            var random_postfix = cyrb53(algosdk.generateAccount().addr);
-            var textString = "AlgoFractal NFT";
+            context.lineWidth = 4;
+
+            context.font = `50pt ${this.getRandomFont()}`;
+            var random_postfix = CARD_TITLE;
+            var textString = "AlgoFractals NFT";
             var textWidth = context.measureText(textString).width;
-            context.fillText(textString, 500 / 2 - textWidth / 2, 30);
-            context.strokeText(textString, 500 / 2 - textWidth / 2, 30);
+            context.fillText(textString, 40, 1360);
+            context.strokeText(textString, 40, 1360);
 
             textString = "#" + random_postfix;
+            context.font = `40pt ${this.getRandomFont()}`;
             textWidth = context.measureText(textString).width;
-            context.fillText(textString, 500 / 2 - textWidth / 2, 480);
-            context.strokeText(textString, 500 / 2 - textWidth / 2, 480);
+            context.fillText(textString, 1400 - 30 - textWidth, 70);
+            context.strokeText(textString, 1400 - 30 - textWidth, 70);
 
             this.$emit("stat", e.data.stat);
 

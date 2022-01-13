@@ -1,10 +1,6 @@
 <template>
     <div class="container">
-        <FdrawR
-            v-model="params"
-            @progress="progress"
-            @stat="stat = $event"
-        ></FdrawR>
+        <FdrawR v-model="params" @progress="progress" @stat="stat = $event" />
     </div>
 </template>
 
@@ -20,7 +16,7 @@ export default {
             x: -1.37215516,
             y: 0.0109641665,
             zoom: 498788,
-            resolution: 2000,
+            resolution: 1000,
             palette: getColor.wk,
         },
         drawing: "",

@@ -1,14 +1,31 @@
 <template>
     <div class="flex h-screen">
         <div
-            class="card md:w-1/3 w-full m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
+            v-if="isMobile()"
+            class="card md:w-8/12 lg:w-6/12 w-9/12 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
         >
-            <figure class="grid justify-center mt-5">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-pink-400">I am sorry 😭</h2>
+                <p class="text-yellow-500">
+                    Mobile screens are not yet supported. Check me out from a
+                    desktop browser and enjoy the magic of fractals 🔮
+                </p>
+            </div>
+        </div>
+        <div
+            v-else
+            class="card md:w-8/12 lg:w-6/12 w-9/12 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
+        >
+            <div class="w-8/12"></div>
+            <figure class="grid z-10 justify-center mt-5">
                 <Fractals class="rounded-lg border-4" />
                 <br />
                 <p class="text-gray-500 italic text-sm">
                     Simply reload the page if you want to generate another
-                    fractal image
+                    fractal image.
+                </p>
+                <p class="text-gray-500 italic animate-pulse text-xs">
+                    If you see a black box, just wait a little more...
                 </p>
             </figure>
 
@@ -20,28 +37,65 @@
                     Click mint button to generate a random fractal NFT. Minted
                     NFT will embed ARC69 traits on the amount of money spent on
                     this NFT (the value), and parameters used to generate it
-                    (position and zoom). Minting cost includes additional 0.1
+                    (position and zoom). Minting cost includes additional 0.5
                     Algo as a fee to creator of AlgoFractals.
                 </p>
-
+                <br v-if="isConnected" />
+                <p v-if="isConnected" class="text-pink-500 heavy">
+                    {{
+                        `${
+                            creator.substring(0, 4) +
+                            "...." +
+                            creator.substring(
+                                creator.length - 4,
+                                creator.length
+                            )
+                        }`
+                    }}
+                </p>
+                <br />
                 <div class="justify-center card-actions">
                     <button
                         v-if="!isConnected"
                         class="btn btn-outline btn-accent"
-                        :onclick="mint"
+                        :onclick="connectWallet"
                     >
                         Connect MyAlgo Wallet
                     </button>
                     <div v-else-if="isConnected">
-                        <button class="btn mr-5 btn btn-accent" :onclick="mint">
+                        <button
+                            :class="buttonClass"
+                            :onclick="mint"
+                            :disabled="loading"
+                        >
                             Mint
                         </button>
                         <button
                             class="btn btn-outline btn-accent"
                             :onclick="logout"
+                            :disabled="loading"
                         >
                             Logout
                         </button>
+                    </div>
+                </div>
+                <br />
+                <div v-if="error" class="alert alert-error">
+                    <div class="flex-1">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            class="w-6 h-6 mx-2 stroke-current"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                            ></path>
+                        </svg>
+                        <label>{{ error }}</label>
                     </div>
                 </div>
             </div>
@@ -51,148 +105,62 @@
 
 <script>
 import Fractals from "@/components/Fractals.vue";
-import algosdk from "algosdk";
 import { NFTStorage, File } from "nft.storage";
+import algosdk from "algosdk";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
-
-function sharpen(ctx, w, h, mix) {
-    var weights = [0, -1, 0, -1, 5, -1, 0, -1, 0],
-        katet = Math.round(Math.sqrt(weights.length)),
-        half = (katet * 0.5) | 0,
-        dstData = ctx.createImageData(w, h),
-        dstBuff = dstData.data,
-        srcBuff = ctx.getImageData(0, 0, w, h).data,
-        y = h;
-
-    while (y--) {
-        x = w;
-
-        while (x--) {
-            var sy = y,
-                sx = x,
-                dstOff = (y * w + x) * 4,
-                r = 0,
-                g = 0,
-                b = 0,
-                a = 0;
-
-            for (var cy = 0; cy < katet; cy++) {
-                for (var cx = 0; cx < katet; cx++) {
-                    var scy = sy + cy - half;
-                    var scx = sx + cx - half;
-
-                    if (scy >= 0 && scy < h && scx >= 0 && scx < w) {
-                        var srcOff = (scy * w + scx) * 4;
-                        var wt = weights[cy * katet + cx];
-
-                        r += srcBuff[srcOff] * wt;
-                        g += srcBuff[srcOff + 1] * wt;
-                        b += srcBuff[srcOff + 2] * wt;
-                        a += srcBuff[srcOff + 3] * wt;
-                    }
-                }
-            }
-
-            dstBuff[dstOff] = r * mix + srcBuff[dstOff] * (1 - mix);
-            dstBuff[dstOff + 1] = g * mix + srcBuff[dstOff + 1] * (1 - mix);
-            dstBuff[dstOff + 2] = b * mix + srcBuff[dstOff + 2] * (1 - mix);
-            dstBuff[dstOff + 3] = srcBuff[dstOff + 3];
-        }
-    }
-
-    ctx.putImageData(dstData, 0, 0);
-}
-
-function resample_single(canvas, width, height, resize_canvas) {
-    var width_source = canvas.width;
-    var height_source = canvas.height;
-    width = Math.round(width);
-    height = Math.round(height);
-
-    var ratio_w = width_source / width;
-    var ratio_h = height_source / height;
-    var ratio_w_half = Math.ceil(ratio_w / 2);
-    var ratio_h_half = Math.ceil(ratio_h / 2);
-
-    var ctx = canvas.getContext("2d");
-    var img = ctx.getImageData(0, 0, width_source, height_source);
-    var img2 = ctx.createImageData(width, height);
-    var data = img.data;
-    var data2 = img2.data;
-
-    for (var j = 0; j < height; j++) {
-        for (var i = 0; i < width; i++) {
-            var x2 = (i + j * width) * 4;
-            var weight = 0;
-            var weights = 0;
-            var weights_alpha = 0;
-            var gx_r = 0;
-            var gx_g = 0;
-            var gx_b = 0;
-            var gx_a = 0;
-            var center_y = (j + 0.5) * ratio_h;
-            var yy_start = Math.floor(j * ratio_h);
-            var yy_stop = Math.ceil((j + 1) * ratio_h);
-            for (var yy = yy_start; yy < yy_stop; yy++) {
-                var dy = Math.abs(center_y - (yy + 0.5)) / ratio_h_half;
-                var center_x = (i + 0.5) * ratio_w;
-                var w0 = dy * dy; //pre-calc part of w
-                var xx_start = Math.floor(i * ratio_w);
-                var xx_stop = Math.ceil((i + 1) * ratio_w);
-                for (var xx = xx_start; xx < xx_stop; xx++) {
-                    var dx = Math.abs(center_x - (xx + 0.5)) / ratio_w_half;
-                    var w = Math.sqrt(w0 + dx * dx);
-                    if (w >= 1) {
-                        //pixel too far
-                        continue;
-                    }
-                    //hermite filter
-                    weight = 2 * w * w * w - 3 * w * w + 1;
-                    var pos_x = 4 * (xx + yy * width_source);
-                    //alpha
-                    gx_a += weight * data[pos_x + 3];
-                    weights_alpha += weight;
-                    //colors
-                    if (data[pos_x + 3] < 255)
-                        weight = (weight * data[pos_x + 3]) / 250;
-                    gx_r += weight * data[pos_x];
-                    gx_g += weight * data[pos_x + 1];
-                    gx_b += weight * data[pos_x + 2];
-                    weights += weight;
-                }
-            }
-            data2[x2] = gx_r / weights;
-            data2[x2 + 1] = gx_g / weights;
-            data2[x2 + 2] = gx_b / weights;
-            data2[x2 + 3] = gx_a / weights_alpha;
-        }
-    }
-    //clear and resize canvas
-    if (resize_canvas === true) {
-        canvas.width = width;
-        canvas.height = height;
-    } else {
-        ctx.clearRect(0, 0, width_source, height_source);
-    }
-
-    //draw
-    ctx.putImageData(img2, 0, 0);
-}
+import {
+    CARD_TITLE,
+    ALGOEXPLORER_API_URL,
+    NFTSTORAGE_API_KEY,
+} from "@/common/constants.js";
 
 export default {
     components: { Fractals },
     data: () => ({
         wallet: undefined,
+        creator: undefined,
+        loading: false,
+        error: undefined,
         accountsSharedByUser: [],
         isConnected: false,
-        accounts: [],
         nftStorage: new NFTStorage({
-            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDA4Mzg1NTIzN0NBRWY0YThBZWNCNDNlZjU5Y0JhNjQ3MUY3NTVFYTQiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0MTk1ODE2OTU2NSwibmFtZSI6ImFsZ29mcmFjdGFscyJ9.YhrtQOUNr-8yMhMgd8OmorKLRdjFXGtP5OaA5bqDcVs",
+            token: NFTSTORAGE_API_KEY,
         }),
         address: undefined,
+        algod: undefined,
     }),
-    mounted() {},
+    computed: {
+        buttonClass() {
+            return this.loading
+                ? "btn mr-5 btn btn-accent loading"
+                : "btn mr-5 btn btn-accent";
+        },
+    },
+    mounted() {
+        this.algod = new algosdk.Algodv2("", ALGOEXPLORER_API_URL, "");
+
+        const cvs = document.getElementById("fractalsCanvas");
+        const ctx = cvs.getContext("2d");
+        const dpr = window.devicePixelRatio;
+        const dpi = 700;
+        let width = 2;
+        let height = 2;
+        cvs.width = width * dpi * dpr;
+        cvs.height = height * dpi * dpr;
+        ctx.scale(dpr, dpr);
+    },
     methods: {
+        isMobile() {
+            if (
+                /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                    navigator.userAgent
+                )
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        },
         dataURLtoFile(dataUrl, fileName) {
             var byteString = atob(dataUrl.split(",")[1]);
 
@@ -215,67 +183,103 @@ export default {
                 const accountsSharedByUser = await wallet.connect();
                 this.wallet = wallet;
                 this.accountsSharedByUser = accountsSharedByUser;
+                this.creator = accountsSharedByUser[0]["address"];
                 this.isConnected = true;
             } catch (e) {
-                console.log(e);
                 this.isConnected = false;
             }
         },
 
-        // getContext(canvas) {
-        //     var dpr = window.devicePixelRatio || 1;
-        //     // Get the size of the canvas in CSS pixels.
-        //     var rect = canvas.getBoundingClientRect();
-        //     // Give the canvas pixel dimensions of their CSS
-        //     // size * the device pixel ratio.
-        //     canvas.width = rect.width * dpr;
-        //     canvas.height = rect.height * dpr;
-        //     var ctx = canvas.getContext("2d");
-        //     // Scale all drawing operations by the dpr, so you
-        //     // don't have to worry about the difference.
-        //     ctx.scale(dpr, dpr);
-        //     return ctx;
-        // },
+        sleep(ms) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+        },
 
         async mint() {
-            var canvas = document.getElementById("fractalsCanvas");
-            console.log(canvas.getContext);
-            if (canvas.getContext && this.isConnected) {
-                var ctx = canvas.getContext("2d");
-                sharpen(ctx, 1500, 1500, 0.8, true);
+            try {
+                this.loading = true;
+                this.error = undefined;
 
-                window.devicePixelRatio = 2;
-                console.log(ctx);
+                const cvs = document.getElementById("fractalsCanvas");
+                const downloadUrl = cvs.toDataURL("image/png");
+                const creatorWallet = this.creator;
 
-                const title = `algofractal_${this.accountsSharedByUser[0]["address"]}`;
-                var myImage = canvas.toDataURL("image/png");
-                var file = this.dataURLtoFile(myImage, title + ".png");
-                console.log(file);
+                const title = `algofractal_#${creatorWallet}_${CARD_TITLE}`;
+                var file = this.dataURLtoFile(downloadUrl, title + ".png");
+
+                await this.sleep(1000);
 
                 const metadata = await this.nftStorage.store({
-                    name: title,
+                    name: String(CARD_TITLE),
                     description: "A randomly generated fractal NFT on Algorand",
                     image: file,
                 });
-                console.log(metadata.url);
+                const status = await this.nftStorage.status(metadata);
+                console.loglog(status);
+                console.log(metadata);
+
+                const assetUrl = `https://${metadata.ipnft}.ipfs.dweb.link/${CARD_TITLE}.png`;
+
+                console.log(assetUrl);
+
+                await this.sleep(1000);
+
+                const params = await this.algod.getTransactionParams().do();
+                const assetName = `AFRCTL#${CARD_TITLE}`;
+
+                const create_frctl_txn =
+                    algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
+                        from: creatorWallet,
+                        assetName: assetName,
+                        unitName: "AFRCTL",
+                        total: 1,
+                        decimals: 0,
+                        assetURL: assetUrl,
+                        note: new TextEncoder("utf-8").encode(
+                            JSON.stringify({
+                                name: assetName,
+                                description:
+                                    "Randomly generated fractal with embedded ARC69 traits",
+                                external_url: "https://algofractals.com",
+                                standard: "arc69",
+                                mime_type: "image/png",
+                                properties: {
+                                    ID: CARD_TITLE,
+                                    Set: "Manderbrot",
+                                },
+                            })
+                        ),
+                        manager: creatorWallet,
+                        suggestedParams: {
+                            ...params,
+                        },
+                    });
+                const fee_txn =
+                    algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+                        from: creatorWallet,
+                        to: "NPRGKVTDZBW7WEGLX4OB4RMP4PIJV5RW5WWE3MJO4INIKHINA2OGEWENQA",
+                        amount: 0.5 * 1e6,
+                        note: new TextEncoder("utf-8").encode(title),
+                        suggestedParams: {
+                            ...params,
+                        },
+                    });
+                const txnsToGroup = [create_frctl_txn, fee_txn];
+                console.log(JSON.stringify(txnsToGroup));
+                const groupID = algosdk.computeGroupID(txnsToGroup);
+                for (let i = 0; i < 2; i++) txnsToGroup[i].group = groupID;
+
+                const signedTxns = await this.wallet.signTransaction(
+                    txnsToGroup.map((txn) => txn.toByte())
+                );
+
+                // Submit the transaction
+                let tx = await this.algod.sendRawTransaction(signedTxns);
+            } catch (e) {
+                this.error = "Unable to mint the NFT, please try again!";
+            } finally {
+                this.loading = false;
+                this.error = undefined;
             }
-
-            // const { cid } = await client.add("Hello world!");
-            // console.log(cid);
-
-            // const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject(
-            //     {
-            //         from: document.getElementById("from").value,
-            //         assetName: document.getElementById("name").value,
-            //         unitName: document.getElementById("unit-name").value,
-            //         total: +document.getElementById("total").value,
-            //         decimals: +document.getElementById("decimals").value,
-            //         note: AlgoSigner.encoding.stringToByteArray(
-            //             document.getElementById("note").value
-            //         ),
-            //         suggestedParams: { ...txParamsJS },
-            //     }
-            // );
         },
 
         async logout() {

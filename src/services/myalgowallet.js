@@ -32,45 +32,4 @@ export class MyAlgoWallet {
             throw new NoAccounts();
         }
     }
-
-    // async algod(params) {
-    //     try {
-    //         return algoExplorer.algod.get(params.path);
-    //     } catch (e) {
-    //         emitError("Could not get information from the Algorand blockchain");
-    //         throw e;
-    //     }
-    // }
-
-    // async indexer(params) {
-    //     try {
-    //         return algoExplorer.indexer.get(params.path);
-    //     } catch (e) {
-    //         emitError("Could not get information from the Algorand blockchain");
-    //         throw e;
-    //     }
-    // }
-
-    // async send(params, showSucess = true) {
-    //     try {
-    //         eventBus.$emit("set-action-message", "Sending...");
-    //         const tx = await algoExplorer.algod.post(
-    //             "/v2/transactions",
-    //             base64ToUint8Array(params.tx),
-    //             {
-    //                 "Content-Type": "application/x-binary",
-    //             }
-    //         );
-    //         if (showSucess) {
-    //             eventBus.$emit("transaction-success", tx.txId);
-    //         }
-    //         return tx;
-    //     } catch (e) {
-    //         try {
-    //             e.message = (await e.response.json())["message"];
-    //         } finally {
-    //             await handleNodeExceptions(e);
-    //         }
-    //     }
-    // }
 }

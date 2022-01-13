@@ -1,0 +1,14 @@
+{
+    "name": "KissBit #1",
+    "description": "6009 artistically curated and randomly generated kisses meant to add spice to the single pfp metaverse.",
+    "external_url": "https://kissbitsnft.com/",
+    "kissBit_number": 1,
+    "standard": "arc69",
+    "mime_type": "image/png",
+    "properties": {
+        "Background": "Pistachio",
+        "Extra": "None",
+        "Persona Left": "Andrew",
+        "Persona Right": "Pino"
+    }
+}

@@ -3,8 +3,7 @@
         class="fcanvas"
         id="fractalsCanvas"
         tabindex="-1"
-        :width="state.width"
-        :height="state.height"
+        style="width: 600px; height: 600px"
     >
     </canvas>
 </template>
@@ -40,12 +39,12 @@ const y_range_array = [
 const range_pick = randomBetween(0, x_range_array.length - 1);
 
 const optionsDefault = {
-    width: 500,
-    height: 500,
+    width: 1400,
+    height: 1400,
     x: x_range_array[range_pick],
     y: y_range_array[range_pick],
     zoom: randomBetween(1000, 41600),
-    resolution: 3000,
+    resolution: 1000,
     palette: getColor.bw,
 };
 
