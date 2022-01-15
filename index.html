@@ -4,18 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AlgoFractals - Generate Random Fractal NFT</title>
-    <script>
-      window.global = window;
-    </script>
-    <script type="module">
-      import process from "process";
-      import { Buffer } from "buffer";
-      import EventEmitter from "events";
 
-      window.Buffer = Buffer;
-      window.process = process;
-      window.EventEmitter = EventEmitter;
-    </script>
     <link
       rel="preload"
       href="/font/Inter-roman.var.woff2"
@@ -29,6 +18,16 @@
   </head>
   <body>
     <div id="app"></div>
+    <script
+      src="https://unpkg.com/algosdk@1.13.0/dist/browser/algosdk.min.js"
+      integrity="sha384-3IaxTgktbWGiqPkr5oZQMM4H99ziYzoEUb6sznk03coGR2Cdf1r0I1GWPUL37iu8"
+      crossorigin="anonymous"
+      type="module"
+    ></script>
+    <script type="module">
+      import { Buffer } from "buffer";
+      window.Buffer = Buffer;
+    </script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
