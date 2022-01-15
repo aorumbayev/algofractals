@@ -100,6 +100,24 @@
                 </div>
             </div>
         </div>
+        <a href="/components/modal#my-modal" class="btn btn-primary"
+            >open modal</a
+        >
+        <div id="my-modal" class="modal">
+            <div class="modal-box">
+                <p>
+                    Enim dolorem dolorum omnis atque necessitatibus. Consequatur
+                    aut adipisci qui iusto illo eaque. Consequatur repudiandae
+                    et. Nulla ea quasi eligendi. Saepe velit autem minima.
+                </p>
+                <div class="modal-action">
+                    <a href="/components/modal#" class="btn btn-primary"
+                        >Accept</a
+                    >
+                    <a href="/components/modal#" class="btn">Close</a>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -273,7 +291,13 @@ export default {
                 );
 
                 // Submit the transaction
-                let tx = await this.algod.sendRawTransaction(signedTxns);
+                let tx_id = await this.algod.sendRawTransaction(signedTxns);
+
+                const tx = await algosdk.waitForConfirmation(
+                    this.algod,
+                    tx_id,
+                    5
+                );
             } catch (e) {
                 this.error = "Unable to mint the NFT, please try again!";
             } finally {
