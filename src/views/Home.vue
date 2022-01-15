@@ -100,9 +100,7 @@
                 </div>
             </div>
         </div>
-        <a href="/components/modal#my-modal" class="btn btn-primary"
-            >open modal</a
-        >
+
         <div id="my-modal" class="modal">
             <div class="modal-box">
                 <p>
