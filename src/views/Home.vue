@@ -1,24 +1,18 @@
 <template>
-    <div class="flex h-screen">
+    <div class="flex h-screen pt-6">
         <div
-            v-if="isMobile()"
-            class="card md:w-8/12 lg:w-6/12 w-9/12 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
+            class="card sm:w-600 w-1200 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
         >
-            <div class="card-body">
-                <h2 class="card-title text-2xl text-pink-400">I am sorry 😭</h2>
-                <p class="text-yellow-500">
-                    Mobile screens are not yet supported. Check me out from a
-                    desktop browser and enjoy the magic of fractals 🔮
-                </p>
+            <div class="container items-center text-center">
+                <canvas
+                    class="rounded-lg border-4"
+                    id="fractal"
+                    :style="canvasSizeStyle"
+                >
+                </canvas>
             </div>
-        </div>
-        <div
-            v-else
-            class="card md:w-8/12 lg:w-6/12 w-9/12 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
-        >
-            <div class="w-8/12"></div>
-            <figure class="grid z-10 justify-center mt-5">
-                <Fractals class="rounded-lg border-4" />
+
+            <figure class="grid justify-center mt-5">
                 <br />
                 <p class="text-gray-500 italic text-sm">
                     Simply reload the page if you want to generate another
@@ -120,7 +114,6 @@
 </template>
 
 <script>
-import Fractals from "@/components/Fractals.vue";
 import { NFTStorage, File } from "nft.storage";
 import algosdk from "algosdk";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
@@ -129,9 +122,79 @@ import {
     ALGOEXPLORER_API_URL,
     NFTSTORAGE_API_KEY,
 } from "@/common/constants.js";
+import { colors } from "@/services/fractal.js";
+
+const randomFloatBetween = (min, max) =>
+    Number((Math.random() * (max - min) + min).toFixed(17));
+
+const FONTS = ["Spicy Rice", "Chicle", "Shrikhand"];
+const COORDS = [
+    {
+        xCartMax: -0.6590666666666665,
+        xCartMin: -0.8126666666666665,
+        yCartMax: -0.1488,
+        yCartMin: -0.24480000000000005,
+    },
+    {
+        xCartMin: -0.7371466666666665,
+        xCartMax: -0.7064266666666665,
+        yCartMin: -0.20544,
+        yCartMax: -0.18624000000000002,
+    },
+    {
+        xCartMin: -0.7275781420765026,
+        xCartMax: -0.7214509289617484,
+        yCartMin: -0.19974295081967214,
+        yCartMax: -0.1921888524590164,
+    },
+    {
+        xCartMin: -0.7277980502732239,
+        xCartMax: -0.7265692502732239,
+        yCartMin: -0.19551265573770493,
+        yCartMax: -0.19400183606557378,
+    },
+    {
+        xCartMin: -0.9448196721311476,
+        xCartMax: -0.17681967213114735,
+        yCartMin: -1.1016393442622952,
+        yCartMax: -0.1573770491803277,
+    },
+    {
+        xCartMin: -0.021540983606557373,
+        xCartMax: 0.7464590163934424,
+        yCartMin: -1.043934426229508,
+        yCartMax: -0.09967213114754125,
+    },
+    {
+        xCartMin: 0.4201219672131147,
+        xCartMax: 0.4508419672131147,
+        yCartMin: -0.35588196721311494,
+        yCartMax: -0.31811147540983625,
+    },
+    {
+        xCartMin: -2.57,
+        xCartMax: 1.2699999999999998,
+        yCartMin: -2.360655737704918,
+        yCartMax: 2.360655737704918,
+    },
+    {
+        xCartMin: -1.3508944262295082,
+        xCartMax: -1.3201744262295083,
+        yCartMin: 0.049311475409836186,
+        yCartMax: 0.08708196721311488,
+    },
+    {
+        xCartMin: -1.3296254426229508,
+        xCartMax: -1.3234814426229509,
+        yCartMin: 0.057704918032787,
+        yCartMax: 0.06525901639344275,
+    },
+];
+
+const randomBetween = (min, max) =>
+    min + Math.floor(Math.random() * (max - min + 1));
 
 export default {
-    components: { Fractals },
     data: () => ({
         wallet: undefined,
         creator: undefined,
@@ -144,28 +207,121 @@ export default {
         }),
         address: undefined,
         algod: undefined,
+        drawing: "",
+        stat: [],
+        fractal: undefined,
     }),
     computed: {
+        canvasSizeStyle() {
+            var width =
+                window.innerWidth > 600
+                    ? 600 - 10
+                    : window.innerWidth <= 400
+                    ? window.innerWidth - 10
+                    : 300 - 10;
+            console.log("meee", width);
+            return `width: ${width}px; height: ${width}px; padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;`;
+        },
         buttonClass() {
             return this.loading
                 ? "btn mr-5 btn btn-accent loading"
                 : "btn mr-5 btn btn-accent";
         },
     },
-    mounted() {
+    async mounted() {
         this.algod = new algosdk.Algodv2("", ALGOEXPLORER_API_URL, "");
+        const canvas = document.getElementById("fractal");
+        this.fractal = new window.mandelbrotFractal.Fractal(canvas);
+        const cords = COORDS[randomBetween(0, COORDS.length)];
+        console.log(cords, "before");
 
-        const cvs = document.getElementById("fractalsCanvas");
-        const ctx = cvs.getContext("2d");
-        const dpr = window.devicePixelRatio;
-        const dpi = 700;
-        let width = 2;
-        let height = 2;
-        cvs.width = width * dpi * dpr;
-        cvs.height = height * dpi * dpr;
-        ctx.scale(dpr, dpr);
+        cords["xCartMin"] = randomFloatBetween(
+            cords["xCartMin"],
+            cords["xCartMax"] / 2
+        );
+
+        cords["xCartMax"] = randomFloatBetween(
+            cords["xCartMin"] / 2,
+            cords["xCartMax"]
+        );
+
+        cords["yCartMin"] = randomFloatBetween(
+            cords["yCartMin"],
+            cords["yCartMax"] / 2
+        );
+
+        cords["yCartMax"] = randomFloatBetween(
+            cords["yCartMin"] / 2,
+            cords["yCartMax"]
+        );
+
+        console.log(cords, "after");
+
+        this.fractal.update({
+            pxWidth: 600,
+            pxHeight: 600,
+            cords: COORDS[randomBetween(0, COORDS.length)],
+            // zoomInPxPoint: {
+            //     xPx: 1464, // e.g. 100
+            //     yPx: 1800, // e.g. 100
+            // },
+        });
+
+        var context = canvas.getContext("2d");
+
+        const randFill = colors[Math.floor(Math.random() * 6)];
+        context.fillStyle = this.rgbToHex(
+            randFill["red"],
+            randFill["green"],
+            randFill["blue"]
+        );
+        context.strokeStyle = "black";
+
+        context.lineWidth = 2;
+
+        var randomFont = this.getRandomFont();
+
+        context.font = `25pt ${randomFont}`;
+        console.log(context.font);
+        var random_postfix = CARD_TITLE;
+        var textString = "AlgoFractals NFT";
+        var textWidth = context.measureText(textString).width;
+        context.fillText("", 15, 600 - 15);
+
+        await this.sleep(1000);
+        context.fillText(textString, 15, 600 - 15);
+        context.strokeText(textString, 15, 600 - 15);
+
+        textString = "#" + random_postfix;
+        context.font = `20pt ${randomFont}`;
+        console.log(context.font);
+        textWidth = context.measureText(textString).width;
+        context.fillText("", 600 - 10 - textWidth, 30);
+
+        await this.sleep(1000);
+        context.fillText(textString, 600 - 10 - textWidth, 30);
+        context.strokeText(textString, 600 - 10 - textWidth, 30);
     },
     methods: {
+        getRandomFont() {
+            return FONTS[Math.floor(Math.random() * FONTS.length)];
+        },
+        componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+        },
+        rgbToHex(r, g, b) {
+            return (
+                "#" +
+                this.componentToHex(r) +
+                this.componentToHex(g) +
+                this.componentToHex(b)
+            );
+        },
         isMobile() {
             if (
                 /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -230,12 +386,8 @@ export default {
                     image: file,
                 });
                 const status = await this.nftStorage.status(metadata);
-                console.loglog(status);
-                console.log(metadata);
 
                 const assetUrl = `https://${metadata.ipnft}.ipfs.dweb.link/${CARD_TITLE}.png`;
-
-                console.log(assetUrl);
 
                 await this.sleep(1000);
 
@@ -280,7 +432,6 @@ export default {
                         },
                     });
                 const txnsToGroup = [create_frctl_txn, fee_txn];
-                console.log(JSON.stringify(txnsToGroup));
                 const groupID = algosdk.computeGroupID(txnsToGroup);
                 for (let i = 0; i < 2; i++) txnsToGroup[i].group = groupID;
 

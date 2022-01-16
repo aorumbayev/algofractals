@@ -5,7 +5,7 @@
         "dev": "vite --host",
         "build": "vite build",
         "serve": "vite preview",
-        "start": "vite build && vite preview"
+        "start": "vite build && vite preview --port 8080"
     },
     "dependencies": {
         "@randlabs/myalgo-connect": "^1.1.2",
@@ -21,7 +21,8 @@
         "uuidv4": "^6.2.12",
         "vue": "^3.2.26",
         "vue-plugin-load-script": ">=2.0.0",
-        "vue-router": "^4.0.12"
+        "vue-router": "^4.0.12",
+        "vue-window-size": "^1.1.2"
     },
     "devDependencies": {
         "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
