@@ -387,7 +387,7 @@ Fractal.prototype.drawToImageData = function () {
             rgbNum = this.rgbNum(escapeTime);
 
             // debugging console log
-            // console.log(x + ", " + y + " - " + Math.round(xCart * 100) / 100 + ", " + Math.round(yCart * 100) / 100 + " - " + escapeTime + " - " + rgbNum[0] + ", " + rgbNum[1] + ", " + rgbNum[2]);
+            //
 
             index = (y * imageData.width + x) * 4;
             imageData.data[index] = rgbNum[0];
@@ -397,15 +397,6 @@ Fractal.prototype.drawToImageData = function () {
         }
     }
 
-    // console.log("max escape time: " + this.maxEscapeTime);
-    // console.log("cords: ", this.cords);
-    // console.log(
-    //     "pixels: width: " +
-    //         imageData.width +
-    //         ", height: " +
-    //         imageData.height
-    // );
-    // console.log("done drawToImageData");
     return imageData;
 };
 
@@ -475,12 +466,11 @@ Fractal.prototype.rgbNum = function (escapeTime) {
 // Waiting to receive the OffScreenCanvas
 self.onmessage = function (e) {
     //Initiate the canvas and start the counting
-    console.log(e);
+
     canvas = e.data.canvas;
     context = canvas.getContext("2d");
-    console.log(e);
+
     generateFractal();
-    console.log("test");
 };
 
 function generateFractal() {
@@ -516,8 +506,6 @@ function generateFractal() {
         cords: COORDS[randomBetween(0, COORDS.length)],
         maxEscapeTime: randomBetween(1000, 1700),
     };
-
-    console.log(params);
 
     fractal.update(params);
 

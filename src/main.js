@@ -1,4 +1,5 @@
 import { createApp } from "vue";
+import { store } from "@/store";
 import "./tailwind.css";
 import App from "./App.vue";
 import { routes } from "./routes.js";
@@ -14,6 +15,7 @@ const router = createRouter({
 });
 
 app.use(router);
+app.use(store);
 app.use(Particles);
 app.config.globalProperties.emitter = emitter;
 app.mount("#app");

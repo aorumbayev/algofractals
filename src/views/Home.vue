@@ -35,7 +35,7 @@
                     Algo as a fee to creator of AlgoFractals.
                 </p>
                 <br v-if="isConnected" />
-                <p v-if="isConnected" class="text-pink-500 heavy">
+                <p v-if="isConnected" class="text-pink-500 heavy bold">
                     {{
                         `${
                             creator.substring(0, 4) +
@@ -51,23 +51,24 @@
                 <div class="justify-center card-actions">
                     <button
                         v-if="!isConnected"
-                        class="btn btn-outline btn-accent"
+                        :class="loginButtonClass"
                         :onclick="connectWallet"
+                        :disabled="loading"
                     >
-                        Connect MyAlgo Wallet
+                        Connect Algorand Wallet
                     </button>
                     <div v-else-if="isConnected">
                         <button
-                            :class="buttonClass"
+                            :class="mintButtonClass"
                             :onclick="mint"
                             :disabled="loading"
                         >
                             Mint
                         </button>
                         <button
+                            v-if="!loading"
                             class="btn btn-outline btn-accent"
                             :onclick="logout"
-                            :disabled="loading"
                         >
                             Logout
                         </button>
@@ -95,18 +96,58 @@
             </div>
         </div>
 
-        <div id="my-modal" class="modal">
-            <div class="modal-box">
-                <p>
-                    Enim dolorem dolorum omnis atque necessitatibus. Consequatur
-                    aut adipisci qui iusto illo eaque. Consequatur repudiandae
-                    et. Nulla ea quasi eligendi. Saepe velit autem minima.
-                </p>
-                <div class="modal-action">
-                    <a href="/components/modal#" class="btn btn-primary"
-                        >Accept</a
+        <input
+            type="checkbox"
+            id="toggle-modal-box"
+            class="modal-toggle"
+            :checked="sharePopupVisible"
+        />
+        <div id="fractal-minted" class="modal">
+            <div class="modal-box modal-open">
+                <p class="text-lg text-center bold">Successfully Minted 🎉</p>
+                <br />
+                <div
+                    class="grid grid-cols-1 justify-center content-center pt-4 pb-4"
+                >
+                    <a
+                        for="toggle-modal-box"
+                        :href="`https://algoexplorer.io/tx/${lastTransaction}`"
+                        target="_blank"
+                        class="btn btn-primary"
+                        >View on AlgoExplorer</a
                     >
-                    <a href="/components/modal#" class="btn">Close</a>
+                    <a
+                        for="toggle-modal-box"
+                        :href="`https://www.randgallery.com/algo-collection/?address=${creator}`"
+                        target="_blank"
+                        class="btn btn-success"
+                        >View on RandGallery</a
+                    >
+                    <a
+                        for="toggle-modal-box"
+                        :href="`https://www.nftexplorer.app/collection?creator=${creator}`"
+                        class="btn btn-warning"
+                        target="_blank"
+                        >View on NFTExplorer</a
+                    >
+                    <!-- <a href="/" class="btn btn-info">Share on Twitter</a> -->
+                </div>
+
+                <br />
+                <p class="text-md text-center italic">
+                    Closing this popup will regenerate the new fractal. As for
+                    the one you just minted, it is now assigned to your wallet
+                    and under your full control.
+                </p>
+
+                <div class="modal-action">
+                    <button
+                        :onclick="reloadPage"
+                        for="toggle-modal-box"
+                        class="btn"
+                    >
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
@@ -116,17 +157,20 @@
 <script>
 import { NFTStorage, File } from "nft.storage";
 import algosdk from "algosdk";
-import MyAlgoConnect from "@randlabs/myalgo-connect";
+
+import { AlgorandWallet } from "@/services/algorandwallet.js";
+// import MyAlgoConnect from "@randlabs/myalgo-connect";
 import {
     ALGOEXPLORER_API_URL,
     NFTSTORAGE_API_KEY,
     CARD_TITLE,
+    ALGORAND_LEDGER,
 } from "@/common/constants.js";
 import Worker from "@/views/worker.js?worker=external";
 
 export default {
     data: () => ({
-        wallet: undefined,
+        wallet: new AlgorandWallet(),
         creator: undefined,
         loading: false,
         error: undefined,
@@ -140,6 +184,8 @@ export default {
         stat: [],
         canvasWidth: 1400,
         worker: new Worker(),
+        sharePopupVisible: false,
+        lastTransaction: undefined,
     }),
     computed: {
         canvasSizeStyle() {
@@ -155,7 +201,12 @@ export default {
             margin-right: auto;
             display: block;`;
         },
-        buttonClass() {
+        loginButtonClass() {
+            return this.loading
+                ? "btn btn-outline btn-accent loading"
+                : "btn btn-outline btn-accent";
+        },
+        mintButtonClass() {
             return this.loading
                 ? "btn mr-5 btn btn-accent loading"
                 : "btn mr-5 btn btn-accent";
@@ -166,6 +217,11 @@ export default {
         this.redrawCanvas();
     },
     methods: {
+        reloadPage() {
+            this.sharePopupVisible = false;
+            window.location.reload();
+            return false;
+        },
         redrawCanvas() {
             var canvas = document
                 .getElementById("fractal")
@@ -201,14 +257,25 @@ export default {
 
         async connectWallet() {
             try {
-                const wallet = new MyAlgoConnect();
-                const accountsSharedByUser = await wallet.connect();
-                this.wallet = wallet;
-                this.accountsSharedByUser = accountsSharedByUser;
-                this.creator = accountsSharedByUser[0]["address"];
-                this.isConnected = true;
+                this.loading = true;
+
+                // await this.wallet.logout();
+
+                await this.wallet.connect();
+                while (!this.isConnected) {
+                    await this.sleep(5000);
+
+                    this.accountsSharedByUser = this.wallet.accounts();
+
+                    if (this.accountsSharedByUser.length > 0) {
+                        this.creator = this.accountsSharedByUser[0]["address"];
+                        this.isConnected = true;
+                        this.loading = false;
+                    }
+                }
             } catch (e) {
                 this.isConnected = false;
+                this.loading = false;
             }
         },
 
@@ -220,6 +287,8 @@ export default {
             try {
                 this.loading = true;
                 this.error = undefined;
+                this.lastTransaction = undefined;
+                this.sharePopupVisible = false;
 
                 const cvs = document.getElementById("fractal");
                 const downloadUrl = cvs.toDataURL("image/png");
@@ -228,31 +297,33 @@ export default {
                 const title = `algofractal_#${creatorWallet}_${CARD_TITLE}`;
                 var file = this.dataURLtoFile(downloadUrl, CARD_TITLE + ".png");
 
-                const metadata = await this.nftStorage.store({
-                    name: String(CARD_TITLE),
-                    description: "A randomly generated fractal NFT on Algorand",
-                    image: file,
-                });
+                const metadata = {
+                    ipnft: "bafybeihr22hamuwzo3rkxlpiyclsrlopvndha6nkp5iptv4wqba46ge7se",
+                };
+                // await this.nftStorage.store({
+                //     name: String(CARD_TITLE),
+                //     description: "A randomly generated fractal NFT on Algorand",
+                //     image: file,
+                // });
 
-                const metaUrl = `https://dweb.link/ipfs/${metadata.ipnft}/metadata.json`;
-                console.log(metaUrl);
-                const response = await fetch(metaUrl);
+                // const metaUrl = `https://dweb.link/ipfs/${metadata.ipnft}/metadata.json`;
+                //
+                // const response = await fetch(metaUrl);
 
-                if (!response.ok) throw new Error(response.statusText);
+                // if (!response.ok) throw new Error(response.statusText);
 
-                const json = await response.json();
-                console.log(json.image);
-                const titlePostfix = json.image.split("ipfs://")[1];
+                // const json = await response.json();
+                //
+                // const titlePostfix = json.image.split("ipfs://")[1];
 
-                const assetUrl = `https://dweb.link/ipfs/${titlePostfix}`;
-
-                console.log(assetUrl, "assetUrl");
+                const assetUrl =
+                    "ipfs://bafybeihr22hamuwzo3rkxlpiyclsrlopvndha6nkp5iptv4wqba46ge7se/1990794658323406.png"; // `https://dweb.link/ipfs/${titlePostfix}`;
 
                 const params = await fetch(
                     `${ALGOEXPLORER_API_URL}/v2/transactions/params`
                 );
                 const paramsJson = await params.json();
-                console.log(paramsJson, "params");
+
                 const assetName = `AFRCTL#${CARD_TITLE}`;
                 const assetObject = {
                     from: creatorWallet,
@@ -272,6 +343,8 @@ export default {
                     ),
                     assetTotal: 1,
                     assetDecimals: 0,
+                    total: 1,
+                    decimals: 0,
                     assetDefaultFrozen: false,
                     assetManager: creatorWallet,
                     assetReserve: undefined,
@@ -290,12 +363,11 @@ export default {
                         genesisHash: paramsJson["genesis-hash"],
                     },
                 };
-                console.log(assetObject);
+
                 const create_frctl_txn =
                     algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject(
                         assetObject
                     );
-                console.log(create_frctl_txn);
 
                 const fee_txn =
                     algosdk.makePaymentTxnWithSuggestedParamsFromObject({
@@ -312,26 +384,22 @@ export default {
                             genesisHash: paramsJson["genesis-hash"],
                         },
                     });
-                console.log(fee_txn);
 
                 const txnsToGroup = [create_frctl_txn, fee_txn];
                 const groupID = algosdk.computeGroupID(txnsToGroup);
                 for (let i = 0; i < 2; i++) txnsToGroup[i].group = groupID;
 
-                const signedTxns = await this.wallet.signTransaction(
-                    txnsToGroup.map((txn) => txn.toByte())
-                );
+                const txs_response = await this.wallet.sign(txnsToGroup);
 
-                // Submit the transaction
-                let tx_id = await this.algod.sendRawTransaction(signedTxns);
+                const tx = await this.wallet.send({
+                    ledger: ALGORAND_LEDGER,
+                    tx: btoa(String.fromCharCode.apply(null, txs_response)),
+                });
 
-                const tx = await algosdk.waitForConfirmation(
-                    this.algod,
-                    tx_id,
-                    5
-                );
+                const txId = tx["txId"];
+                this.lastTransaction = txId;
+                this.sharePopupVisible = true;
             } catch (e) {
-                console.log(e);
                 this.error = "Unable to mint the NFT, please try again!";
             } finally {
                 this.loading = false;
@@ -340,7 +408,7 @@ export default {
         },
 
         async logout() {
-            this.wallet = new MyAlgoConnect();
+            await this.wallet.logout();
             this.isConnected = false;
         },
     },

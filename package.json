@@ -8,7 +8,10 @@
         "start": "vite build && vite preview --port 8080"
     },
     "dependencies": {
+        "@json-rpc-tools/utils": "^1.7.6",
         "@randlabs/myalgo-connect": "^1.1.2",
+        "@walletconnect/client": "^1.7.1",
+        "algorand-walletconnect-qrcode-modal": "^1.6.1",
         "algosdk": "^1.13.0",
         "buffer": "^6.0.3",
         "daisyui": "^1.22.0",
@@ -21,7 +24,8 @@
         "vue": "^3.2.26",
         "vue-plugin-load-script": ">=2.0.0",
         "vue-router": "^4.0.12",
-        "vue-window-size": "^1.1.2"
+        "vue-window-size": "^1.1.2",
+        "vuex": "^4.0.2"
     },
     "devDependencies": {
         "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
