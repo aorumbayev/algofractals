@@ -192,8 +192,8 @@ export default {
             var width =
                 window.innerWidth > 600
                     ? 600 - 10
-                    : window.innerWidth <= 400
-                    ? window.innerWidth - 10
+                    : window.innerWidth >= 400
+                    ? window.innerWidth - 20
                     : 300 - 10;
             return `width: ${width}px; height: ${width}px; padding-left: 0;
             padding-right: 0;
