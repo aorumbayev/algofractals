@@ -1,6 +1,20 @@
 <template>
     <div class="flex h-screen pt-6">
         <div
+            v-if="isMobile()"
+            class="card md:w-8/12 lg:w-6/12 w-9/12 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
+        >
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-pink-400">I am sorry 😭</h2>
+                <p class="text-yellow-500">
+                    Some iOS mobile devices are not yet supported. Check me out
+                    from a desktop browser or android and enjoy the magic of
+                    fractals 🔮
+                </p>
+            </div>
+        </div>
+        <div
+            v-else
             class="card sm:w-600 w-1200 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
         >
             <div class="container items-center text-center">
@@ -232,11 +246,7 @@ export default {
             this.worker.postMessage({ canvas: canvas }, [canvas]);
         },
         isMobile() {
-            if (
-                /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                    navigator.userAgent
-                )
-            ) {
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                 return true;
             } else {
                 return false;
