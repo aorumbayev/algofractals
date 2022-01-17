@@ -1,7 +1,7 @@
-import { CARD_TITLE } from "@/common/constants.js";
-
 var canvas = null;
 var context = null;
+var cardTitle = null;
+
 var canvasWidth = 1400;
 
 const randomBetween = (min, max) =>
@@ -466,8 +466,8 @@ Fractal.prototype.rgbNum = function (escapeTime) {
 // Waiting to receive the OffScreenCanvas
 self.onmessage = function (e) {
     //Initiate the canvas and start the counting
-
     canvas = e.data.canvas;
+    cardTitle = e.data.cardTitle;
     context = canvas.getContext("2d");
 
     generateFractal();
@@ -553,7 +553,7 @@ function drawContent() {
     sleep(500).then(() => {
         context.fillText("", 0, 42.5);
         sleep(500).then(() => {
-            var textString = "#" + CARD_TITLE;
+            var textString = "#" + cardTitle;
             context.font = `30pt ${randomFont}`;
             var textWidth = context.measureText(textString).width;
             context.fillText(textString, canvasWidth - textWidth - 15, 42.5);

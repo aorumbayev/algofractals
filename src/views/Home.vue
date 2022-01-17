@@ -178,6 +178,7 @@ import {
     ALGOEXPLORER_API_URL,
     NFTSTORAGE_API_KEY,
     CARD_TITLE,
+    CARD_ID,
     ALGORAND_LEDGER,
 } from "@/common/constants.js";
 import Worker from "@/views/worker.js?worker=external";
@@ -243,7 +244,9 @@ export default {
             var canvas = document
                 .getElementById("fractal")
                 .transferControlToOffscreen();
-            this.worker.postMessage({ canvas: canvas }, [canvas]);
+            this.worker.postMessage({ canvas: canvas, cardTitle: CARD_TITLE }, [
+                canvas,
+            ]);
         },
         isMobile() {
             if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
@@ -307,37 +310,31 @@ export default {
                 const downloadUrl = cvs.toDataURL("image/png");
                 const creatorWallet = this.creator;
 
-                const title = `algofractal_#${creatorWallet}_${CARD_TITLE}`;
-                var file = this.dataURLtoFile(downloadUrl, CARD_TITLE + ".png");
+                const title = `algofractal_#${creatorWallet}_${CARD_ID}`;
+                var file = this.dataURLtoFile(downloadUrl, CARD_ID + ".png");
 
-                const metadata = {
-                    ipnft: "bafybeihr22hamuwzo3rkxlpiyclsrlopvndha6nkp5iptv4wqba46ge7se",
-                };
-                // await this.nftStorage.store({
-                //     name: String(CARD_TITLE),
-                //     description: "A randomly generated fractal NFT on Algorand",
-                //     image: file,
-                // });
+                const metadata = await this.nftStorage.store({
+                    name: String(CARD_ID),
+                    description: "A randomly generated fractal NFT on Algorand",
+                    image: file,
+                });
 
-                // const metaUrl = `https://dweb.link/ipfs/${metadata.ipnft}/metadata.json`;
-                //
-                // const response = await fetch(metaUrl);
+                const metaUrl = `https://dweb.link/ipfs/${metadata.ipnft}/metadata.json`;
 
-                // if (!response.ok) throw new Error(response.statusText);
+                const response = await fetch(metaUrl);
 
-                // const json = await response.json();
-                //
-                // const titlePostfix = json.image.split("ipfs://")[1];
+                if (!response.ok) throw new Error(response.statusText);
 
-                const assetUrl =
-                    "ipfs://bafybeihr22hamuwzo3rkxlpiyclsrlopvndha6nkp5iptv4wqba46ge7se/1990794658323406.png"; // `https://dweb.link/ipfs/${titlePostfix}`;
+                const json = await response.json();
+
+                const assetUrl = json.image;
 
                 const params = await fetch(
                     `${ALGOEXPLORER_API_URL}/v2/transactions/params`
                 );
                 const paramsJson = await params.json();
 
-                const assetName = `AFRCTL#${CARD_TITLE}`;
+                const assetName = `AlgoFractal #${CARD_TITLE}`;
                 const assetObject = {
                     from: creatorWallet,
                     note: new TextEncoder("utf-8").encode(
@@ -349,7 +346,8 @@ export default {
                             standard: "arc69",
                             mime_type: "image/png",
                             properties: {
-                                ID: CARD_TITLE,
+                                Title: CARD_TITLE,
+                                ID: CARD_ID,
                                 Set: "Manderbrot",
                             },
                         })
@@ -358,12 +356,12 @@ export default {
                     assetDecimals: 0,
                     total: 1,
                     decimals: 0,
-                    assetDefaultFrozen: false,
-                    assetManager: creatorWallet,
-                    assetReserve: undefined,
-                    assetFreeze: undefined,
-                    assetClawback: undefined,
-                    assetUnitName: "AFRCTL",
+                    defaultFrozen: false,
+                    manager: creatorWallet,
+                    reserve: undefined,
+                    freeze: undefined,
+                    clawback: undefined,
+                    unitName: "AFRCTL",
                     assetName: assetName,
                     assetURL: assetUrl,
                     type: "acfg",
