@@ -42,11 +42,10 @@
                     Generate random Fractal NFT
                 </h2>
                 <p class="text-yellow-500">
-                    Click mint button to generate a random fractal NFT. Minted
-                    NFT will embed ARC69 traits on the amount of money spent on
-                    this NFT (the value), and parameters used to generate it
-                    (position and zoom). Minting cost includes additional 0.5
-                    Algo as a fee to creator of AlgoFractals.
+                    Click mint button to generate a random Fractal, upload it to
+                    IPFS and mint an ARC69 compliant NFT on Algorand Blockchain.
+                    Minting cost includes additional 0.5 Algo as a fee to
+                    creator of AlgoFractals.
                 </p>
                 <br v-if="isConnected" />
                 <p v-if="isConnected" class="text-pink-500 heavy bold">
