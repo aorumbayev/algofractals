@@ -102,7 +102,7 @@
             class="modal-toggle"
             :checked="sharePopupVisible"
         />
-        <div id="fractal-minted" class="modal">
+        <div v-if="sharePopupVisible" id="fractal-minted" class="modal">
             <div class="modal-box modal-open">
                 <p class="text-lg text-center bold">Successfully Minted 🎉</p>
                 <br />
