@@ -189,11 +189,14 @@ export default {
     }),
     computed: {
         canvasSizeStyle() {
+            const inWidth =
+                window.innerWidth == 0 ? screen.width : window.innerWidth;
+
             var width =
-                window.innerWidth > 600
+                inWidth > 600
                     ? 600 - 10
-                    : window.innerWidth >= 400
-                    ? window.innerWidth - 20
+                    : inWidth >= 400
+                    ? inWidth - 20
                     : 300 - 10;
             return `width: ${width}px; height: ${width}px; padding-left: 0;
             padding-right: 0;
