@@ -409,6 +409,9 @@ export default {
 
                 const txId = tx["txId"];
                 this.lastTransaction = txId;
+
+                await this.sleep(10000);
+
                 this.sharePopupVisible = true;
             } catch (e) {
                 this.error = "Unable to mint the NFT, please try again!";
