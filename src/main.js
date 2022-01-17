@@ -2,13 +2,9 @@ import { createApp } from "vue";
 import "./tailwind.css";
 import App from "./App.vue";
 import { routes } from "./routes.js";
-import { Buffer } from "buffer";
 import { createRouter, createWebHistory } from "vue-router";
 import Particles from "particles.vue3";
 import mitt from "mitt";
-
-window.Buffer = Buffer;
-
 const emitter = mitt();
 const app = createApp(App);
 

@@ -1,24 +1,18 @@
 <template>
-    <div class="flex h-screen">
+    <div class="flex h-screen pt-6">
         <div
-            v-if="isMobile()"
-            class="card md:w-8/12 lg:w-6/12 w-9/12 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
+            class="card sm:w-600 w-1200 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
         >
-            <div class="card-body">
-                <h2 class="card-title text-2xl text-pink-400">I am sorry 😭</h2>
-                <p class="text-yellow-500">
-                    Mobile screens are not yet supported. Check me out from a
-                    desktop browser and enjoy the magic of fractals 🔮
-                </p>
+            <div class="container items-center text-center">
+                <canvas
+                    class="rounded-lg border-4"
+                    id="fractal"
+                    :style="canvasSizeStyle"
+                >
+                </canvas>
             </div>
-        </div>
-        <div
-            v-else
-            class="card md:w-8/12 lg:w-6/12 w-9/12 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
-        >
-            <div class="w-8/12"></div>
-            <figure class="grid z-10 justify-center mt-5">
-                <Fractals class="rounded-lg border-4" />
+
+            <figure class="grid justify-center mt-2">
                 <br />
                 <p class="text-gray-500 italic text-sm">
                     Simply reload the page if you want to generate another
@@ -100,22 +94,36 @@
                 </div>
             </div>
         </div>
+
+        <div id="my-modal" class="modal">
+            <div class="modal-box">
+                <p>
+                    Enim dolorem dolorum omnis atque necessitatibus. Consequatur
+                    aut adipisci qui iusto illo eaque. Consequatur repudiandae
+                    et. Nulla ea quasi eligendi. Saepe velit autem minima.
+                </p>
+                <div class="modal-action">
+                    <a href="/components/modal#" class="btn btn-primary"
+                        >Accept</a
+                    >
+                    <a href="/components/modal#" class="btn">Close</a>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
-import Fractals from "@/components/Fractals.vue";
 import { NFTStorage, File } from "nft.storage";
 import algosdk from "algosdk";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import {
-    CARD_TITLE,
     ALGOEXPLORER_API_URL,
     NFTSTORAGE_API_KEY,
+    CARD_TITLE,
 } from "@/common/constants.js";
 
 export default {
-    components: { Fractals },
     data: () => ({
         wallet: undefined,
         creator: undefined,
@@ -128,8 +136,24 @@ export default {
         }),
         address: undefined,
         algod: undefined,
+        stat: [],
+        canvasWidth: 1400,
+        worker: new Worker("src/views/worker.js", { type: "module" }),
     }),
     computed: {
+        canvasSizeStyle() {
+            var width =
+                window.innerWidth > 600
+                    ? 600 - 10
+                    : window.innerWidth <= 400
+                    ? window.innerWidth - 10
+                    : 300 - 10;
+            return `width: ${width}px; height: ${width}px; padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;`;
+        },
         buttonClass() {
             return this.loading
                 ? "btn mr-5 btn btn-accent loading"
@@ -138,18 +162,15 @@ export default {
     },
     mounted() {
         this.algod = new algosdk.Algodv2("", ALGOEXPLORER_API_URL, "");
-
-        const cvs = document.getElementById("fractalsCanvas");
-        const ctx = cvs.getContext("2d");
-        const dpr = window.devicePixelRatio;
-        const dpi = 700;
-        let width = 2;
-        let height = 2;
-        cvs.width = width * dpi * dpr;
-        cvs.height = height * dpi * dpr;
-        ctx.scale(dpr, dpr);
+        this.redrawCanvas();
     },
     methods: {
+        redrawCanvas() {
+            var canvas = document
+                .getElementById("fractal")
+                .transferControlToOffscreen();
+            this.worker.postMessage({ canvas: canvas }, [canvas]);
+        },
         isMobile() {
             if (
                 /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -199,60 +220,82 @@ export default {
                 this.loading = true;
                 this.error = undefined;
 
-                const cvs = document.getElementById("fractalsCanvas");
+                const cvs = document.getElementById("fractal");
                 const downloadUrl = cvs.toDataURL("image/png");
                 const creatorWallet = this.creator;
 
                 const title = `algofractal_#${creatorWallet}_${CARD_TITLE}`;
-                var file = this.dataURLtoFile(downloadUrl, title + ".png");
-
-                await this.sleep(1000);
+                var file = this.dataURLtoFile(downloadUrl, CARD_TITLE + ".png");
 
                 const metadata = await this.nftStorage.store({
                     name: String(CARD_TITLE),
                     description: "A randomly generated fractal NFT on Algorand",
                     image: file,
                 });
-                const status = await this.nftStorage.status(metadata);
-                console.loglog(status);
-                console.log(metadata);
 
-                const assetUrl = `https://${metadata.ipnft}.ipfs.dweb.link/${CARD_TITLE}.png`;
+                const metaUrl = `https://dweb.link/ipfs/${metadata.ipnft}/metadata.json`;
+                console.log(metaUrl);
+                const response = await fetch(metaUrl);
 
-                console.log(assetUrl);
+                if (!response.ok) throw new Error(response.statusText);
 
-                await this.sleep(1000);
+                const json = await response.json();
+                console.log(json.image);
+                const titlePostfix = json.image.split("ipfs://")[1];
 
-                const params = await this.algod.getTransactionParams().do();
+                const assetUrl = `https://dweb.link/ipfs/${titlePostfix}`;
+
+                console.log(assetUrl, "assetUrl");
+
+                const params = await fetch(
+                    `${ALGOEXPLORER_API_URL}/v2/transactions/params`
+                );
+                const paramsJson = await params.json();
+                console.log(paramsJson, "params");
                 const assetName = `AFRCTL#${CARD_TITLE}`;
-
+                const assetObject = {
+                    from: creatorWallet,
+                    note: new TextEncoder("utf-8").encode(
+                        JSON.stringify({
+                            name: assetName,
+                            description:
+                                "Randomly generated fractal with embedded ARC69 traits",
+                            external_url: "https://algofractals.com",
+                            standard: "arc69",
+                            mime_type: "image/png",
+                            properties: {
+                                ID: CARD_TITLE,
+                                Set: "Manderbrot",
+                            },
+                        })
+                    ),
+                    assetTotal: 1,
+                    assetDecimals: 0,
+                    assetDefaultFrozen: false,
+                    assetManager: creatorWallet,
+                    assetReserve: undefined,
+                    assetFreeze: undefined,
+                    assetClawback: undefined,
+                    assetUnitName: "AFRCTL",
+                    assetName: assetName,
+                    assetURL: assetUrl,
+                    type: "acfg",
+                    suggestedParams: {
+                        genesisID: paramsJson["genesis-id"],
+                        fee: paramsJson["min-fee"],
+                        firstRound: paramsJson["last-round"],
+                        flatFee: true,
+                        lastRound: paramsJson["last-round"] + 1000,
+                        genesisHash: paramsJson["genesis-hash"],
+                    },
+                };
+                console.log(assetObject);
                 const create_frctl_txn =
-                    algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
-                        from: creatorWallet,
-                        assetName: assetName,
-                        unitName: "AFRCTL",
-                        total: 1,
-                        decimals: 0,
-                        assetURL: assetUrl,
-                        note: new TextEncoder("utf-8").encode(
-                            JSON.stringify({
-                                name: assetName,
-                                description:
-                                    "Randomly generated fractal with embedded ARC69 traits",
-                                external_url: "https://algofractals.com",
-                                standard: "arc69",
-                                mime_type: "image/png",
-                                properties: {
-                                    ID: CARD_TITLE,
-                                    Set: "Manderbrot",
-                                },
-                            })
-                        ),
-                        manager: creatorWallet,
-                        suggestedParams: {
-                            ...params,
-                        },
-                    });
+                    algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject(
+                        assetObject
+                    );
+                console.log(create_frctl_txn);
+
                 const fee_txn =
                     algosdk.makePaymentTxnWithSuggestedParamsFromObject({
                         from: creatorWallet,
@@ -260,11 +303,17 @@ export default {
                         amount: 0.5 * 1e6,
                         note: new TextEncoder("utf-8").encode(title),
                         suggestedParams: {
-                            ...params,
+                            genesisID: paramsJson["genesis-id"],
+                            fee: paramsJson["min-fee"],
+                            firstRound: paramsJson["last-round"],
+                            flatFee: true,
+                            lastRound: paramsJson["last-round"] + 1000,
+                            genesisHash: paramsJson["genesis-hash"],
                         },
                     });
+                console.log(fee_txn);
+
                 const txnsToGroup = [create_frctl_txn, fee_txn];
-                console.log(JSON.stringify(txnsToGroup));
                 const groupID = algosdk.computeGroupID(txnsToGroup);
                 for (let i = 0; i < 2; i++) txnsToGroup[i].group = groupID;
 
@@ -273,8 +322,15 @@ export default {
                 );
 
                 // Submit the transaction
-                let tx = await this.algod.sendRawTransaction(signedTxns);
+                let tx_id = await this.algod.sendRawTransaction(signedTxns);
+
+                const tx = await algosdk.waitForConfirmation(
+                    this.algod,
+                    tx_id,
+                    5
+                );
             } catch (e) {
+                console.log(e);
                 this.error = "Unable to mint the NFT, please try again!";
             } finally {
                 this.loading = false;
