@@ -7,9 +7,10 @@ import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfil
 import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
 // You don't need to add this to deps, it's included by @esbuild-plugins/node-modules-polyfill
 import rollupNodePolyFill from "rollup-plugin-node-polyfills";
+import worker from "vite-plugin-external-worker";
 
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [vue(), worker()],
     optimizeDeps: {
         esbuildOptions: {
             // Node.js global to browser globalThis

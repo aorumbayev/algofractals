@@ -122,6 +122,7 @@ import {
     NFTSTORAGE_API_KEY,
     CARD_TITLE,
 } from "@/common/constants.js";
+import Worker from "@/views/worker.js?worker=external";
 
 export default {
     data: () => ({
@@ -138,7 +139,7 @@ export default {
         algod: undefined,
         stat: [],
         canvasWidth: 1400,
-        worker: new Worker("src/views/worker.js", { type: "module" }),
+        worker: new Worker(),
     }),
     computed: {
         canvasSizeStyle() {
