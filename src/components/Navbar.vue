@@ -27,9 +27,9 @@
                     randomly generated on each page restart. In other words
                     every single AlgoFractals NFT is unique and minted on behalf
                     of anyone creating via this platform. <br />Manager wallet
-                    is set to the address of the AlgoFractals NFT manager
-                    escrow. This will ensure that future updates in AlgoFractals
-                    NFT project will be applicable to all minted fractals.
+                    is set to the address of the user wallet. That way end user
+                    is free to edit the ASA after minting in any way he wants
+                    (issuing asset config transactions).
 
                     <br /><br />Currently only supports Mandelbrot sets. Stay
                     tuned for more randomization and new sets!
