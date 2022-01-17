@@ -10,7 +10,7 @@ const randomBetween = (min, max) =>
 const randomFloatBetween = (min, max) =>
     Number((Math.random() * (max - min) + min).toFixed(17));
 
-const FONTS = ["Spicy Rice", "Chicle", "Shrikhand"];
+const FONTS = ["Shrikhand", "Shrikhand", "Shrikhand"];
 
 const COORDS = [
     {
