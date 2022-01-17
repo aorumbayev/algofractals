@@ -46,9 +46,15 @@
                     your own risk.
                 </p>
                 <br />
-                <p>@algofractals_nft</p>
-                <br />
+
                 <p class="text-center text-sm">
+                    <a
+                        href="https://twitter.com/algo_fractals"
+                        class="text-center text-sm"
+                        target="_blank"
+                        >@algo_fractals</a
+                    >
+                    <br />
                     Copyright © 2022 - AlgoFractals NFT
                 </p>
                 <div class="modal-action">
