@@ -274,15 +274,15 @@ export const colors = [
             }
         }
 
-        console.log("max escape time: " + this.maxEscapeTime);
-        console.log("cords: ", this.cords);
-        console.log(
-            "pixels: width: " +
-                imageData.width +
-                ", height: " +
-                imageData.height
-        );
-        console.log("done drawToImageData");
+        // console.log("max escape time: " + this.maxEscapeTime);
+        // console.log("cords: ", this.cords);
+        // console.log(
+        //     "pixels: width: " +
+        //         imageData.width +
+        //         ", height: " +
+        //         imageData.height
+        // );
+        // console.log("done drawToImageData");
         return imageData;
     };
 

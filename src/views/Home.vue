@@ -12,7 +12,7 @@
                 </canvas>
             </div>
 
-            <figure class="grid justify-center mt-5">
+            <figure class="grid justify-center mt-2">
                 <br />
                 <p class="text-gray-500 italic text-sm">
                     Simply reload the page if you want to generate another
@@ -118,81 +118,10 @@ import { NFTStorage, File } from "nft.storage";
 import algosdk from "algosdk";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import {
-    CARD_TITLE,
     ALGOEXPLORER_API_URL,
     NFTSTORAGE_API_KEY,
+    CARD_TITLE,
 } from "@/common/constants.js";
-import { colors } from "@/services/fractal.js";
-
-const randomFloatBetween = (min, max) =>
-    Number((Math.random() * (max - min) + min).toFixed(17));
-
-const FONTS = ["Spicy Rice", "Chicle", "Shrikhand"];
-const COORDS = [
-    {
-        xCartMax: -0.6590666666666665,
-        xCartMin: -0.8126666666666665,
-        yCartMax: -0.1488,
-        yCartMin: -0.24480000000000005,
-    },
-    {
-        xCartMin: -0.7371466666666665,
-        xCartMax: -0.7064266666666665,
-        yCartMin: -0.20544,
-        yCartMax: -0.18624000000000002,
-    },
-    {
-        xCartMin: -0.7275781420765026,
-        xCartMax: -0.7214509289617484,
-        yCartMin: -0.19974295081967214,
-        yCartMax: -0.1921888524590164,
-    },
-    {
-        xCartMin: -0.7277980502732239,
-        xCartMax: -0.7265692502732239,
-        yCartMin: -0.19551265573770493,
-        yCartMax: -0.19400183606557378,
-    },
-    {
-        xCartMin: -0.9448196721311476,
-        xCartMax: -0.17681967213114735,
-        yCartMin: -1.1016393442622952,
-        yCartMax: -0.1573770491803277,
-    },
-    {
-        xCartMin: -0.021540983606557373,
-        xCartMax: 0.7464590163934424,
-        yCartMin: -1.043934426229508,
-        yCartMax: -0.09967213114754125,
-    },
-    {
-        xCartMin: 0.4201219672131147,
-        xCartMax: 0.4508419672131147,
-        yCartMin: -0.35588196721311494,
-        yCartMax: -0.31811147540983625,
-    },
-    {
-        xCartMin: -2.57,
-        xCartMax: 1.2699999999999998,
-        yCartMin: -2.360655737704918,
-        yCartMax: 2.360655737704918,
-    },
-    {
-        xCartMin: -1.3508944262295082,
-        xCartMax: -1.3201744262295083,
-        yCartMin: 0.049311475409836186,
-        yCartMax: 0.08708196721311488,
-    },
-    {
-        xCartMin: -1.3296254426229508,
-        xCartMax: -1.3234814426229509,
-        yCartMin: 0.057704918032787,
-        yCartMax: 0.06525901639344275,
-    },
-];
-
-const randomBetween = (min, max) =>
-    min + Math.floor(Math.random() * (max - min + 1));
 
 export default {
     data: () => ({
@@ -207,9 +136,9 @@ export default {
         }),
         address: undefined,
         algod: undefined,
-        drawing: "",
         stat: [],
-        fractal: undefined,
+        canvasWidth: 1400,
+        worker: new Worker("src/views/worker.js", { type: "module" }),
     }),
     computed: {
         canvasSizeStyle() {
@@ -219,7 +148,6 @@ export default {
                     : window.innerWidth <= 400
                     ? window.innerWidth - 10
                     : 300 - 10;
-            console.log("meee", width);
             return `width: ${width}px; height: ${width}px; padding-left: 0;
             padding-right: 0;
             margin-left: auto;
@@ -232,95 +160,16 @@ export default {
                 : "btn mr-5 btn btn-accent";
         },
     },
-    async mounted() {
+    mounted() {
         this.algod = new algosdk.Algodv2("", ALGOEXPLORER_API_URL, "");
-        const canvas = document.getElementById("fractal");
-        this.fractal = new window.mandelbrotFractal.Fractal(canvas);
-        const cords = COORDS[randomBetween(0, COORDS.length)];
-        console.log(cords, "before");
-
-        cords["xCartMin"] = randomFloatBetween(
-            cords["xCartMin"],
-            cords["xCartMax"] / 2
-        );
-
-        cords["xCartMax"] = randomFloatBetween(
-            cords["xCartMin"] / 2,
-            cords["xCartMax"]
-        );
-
-        cords["yCartMin"] = randomFloatBetween(
-            cords["yCartMin"],
-            cords["yCartMax"] / 2
-        );
-
-        cords["yCartMax"] = randomFloatBetween(
-            cords["yCartMin"] / 2,
-            cords["yCartMax"]
-        );
-
-        console.log(cords, "after");
-
-        this.fractal.update({
-            pxWidth: 600,
-            pxHeight: 600,
-            cords: COORDS[randomBetween(0, COORDS.length)],
-            // zoomInPxPoint: {
-            //     xPx: 1464, // e.g. 100
-            //     yPx: 1800, // e.g. 100
-            // },
-        });
-
-        var context = canvas.getContext("2d");
-
-        const randFill = colors[Math.floor(Math.random() * 6)];
-        context.fillStyle = this.rgbToHex(
-            randFill["red"],
-            randFill["green"],
-            randFill["blue"]
-        );
-        context.strokeStyle = "black";
-
-        context.lineWidth = 2;
-
-        var randomFont = this.getRandomFont();
-
-        context.font = `25pt ${randomFont}`;
-        console.log(context.font);
-        var random_postfix = CARD_TITLE;
-        var textString = "AlgoFractals NFT";
-        var textWidth = context.measureText(textString).width;
-        context.fillText("", 15, 600 - 15);
-
-        await this.sleep(1000);
-        context.fillText(textString, 15, 600 - 15);
-        context.strokeText(textString, 15, 600 - 15);
-
-        textString = "#" + random_postfix;
-        context.font = `20pt ${randomFont}`;
-        console.log(context.font);
-        textWidth = context.measureText(textString).width;
-        context.fillText("", 600 - 10 - textWidth, 30);
-
-        await this.sleep(1000);
-        context.fillText(textString, 600 - 10 - textWidth, 30);
-        context.strokeText(textString, 600 - 10 - textWidth, 30);
+        this.redrawCanvas();
     },
     methods: {
-        getRandomFont() {
-            return FONTS[Math.floor(Math.random() * FONTS.length)];
-        },
-        componentToHex(c) {
-            var hex = c.toString(16);
-            return hex.length == 1 ? "0" + hex : hex;
-        },
-        rgbToHex(r, g, b) {
-            return (
-                "#" +
-                this.componentToHex(r) +
-                this.componentToHex(g) +
-                this.componentToHex(b)
-            );
+        redrawCanvas() {
+            var canvas = document
+                .getElementById("fractal")
+                .transferControlToOffscreen();
+            this.worker.postMessage({ canvas: canvas }, [canvas]);
         },
         isMobile() {
             if (
@@ -371,56 +220,82 @@ export default {
                 this.loading = true;
                 this.error = undefined;
 
-                const cvs = document.getElementById("fractalsCanvas");
+                const cvs = document.getElementById("fractal");
                 const downloadUrl = cvs.toDataURL("image/png");
                 const creatorWallet = this.creator;
 
                 const title = `algofractal_#${creatorWallet}_${CARD_TITLE}`;
-                var file = this.dataURLtoFile(downloadUrl, title + ".png");
-
-                await this.sleep(1000);
+                var file = this.dataURLtoFile(downloadUrl, CARD_TITLE + ".png");
 
                 const metadata = await this.nftStorage.store({
                     name: String(CARD_TITLE),
                     description: "A randomly generated fractal NFT on Algorand",
                     image: file,
                 });
-                const status = await this.nftStorage.status(metadata);
 
-                const assetUrl = `https://${metadata.ipnft}.ipfs.dweb.link/${CARD_TITLE}.png`;
+                const metaUrl = `https://dweb.link/ipfs/${metadata.ipnft}/metadata.json`;
+                console.log(metaUrl);
+                const response = await fetch(metaUrl);
 
-                await this.sleep(1000);
+                if (!response.ok) throw new Error(response.statusText);
 
-                const params = await this.algod.getTransactionParams().do();
+                const json = await response.json();
+                console.log(json.image);
+                const titlePostfix = json.image.split("ipfs://")[1];
+
+                const assetUrl = `https://dweb.link/ipfs/${titlePostfix}`;
+
+                console.log(assetUrl, "assetUrl");
+
+                const params = await fetch(
+                    `${ALGOEXPLORER_API_URL}/v2/transactions/params`
+                );
+                const paramsJson = await params.json();
+                console.log(paramsJson, "params");
                 const assetName = `AFRCTL#${CARD_TITLE}`;
-
+                const assetObject = {
+                    from: creatorWallet,
+                    note: new TextEncoder("utf-8").encode(
+                        JSON.stringify({
+                            name: assetName,
+                            description:
+                                "Randomly generated fractal with embedded ARC69 traits",
+                            external_url: "https://algofractals.com",
+                            standard: "arc69",
+                            mime_type: "image/png",
+                            properties: {
+                                ID: CARD_TITLE,
+                                Set: "Manderbrot",
+                            },
+                        })
+                    ),
+                    assetTotal: 1,
+                    assetDecimals: 0,
+                    assetDefaultFrozen: false,
+                    assetManager: creatorWallet,
+                    assetReserve: undefined,
+                    assetFreeze: undefined,
+                    assetClawback: undefined,
+                    assetUnitName: "AFRCTL",
+                    assetName: assetName,
+                    assetURL: assetUrl,
+                    type: "acfg",
+                    suggestedParams: {
+                        genesisID: paramsJson["genesis-id"],
+                        fee: paramsJson["min-fee"],
+                        firstRound: paramsJson["last-round"],
+                        flatFee: true,
+                        lastRound: paramsJson["last-round"] + 1000,
+                        genesisHash: paramsJson["genesis-hash"],
+                    },
+                };
+                console.log(assetObject);
                 const create_frctl_txn =
-                    algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
-                        from: creatorWallet,
-                        assetName: assetName,
-                        unitName: "AFRCTL",
-                        total: 1,
-                        decimals: 0,
-                        assetURL: assetUrl,
-                        note: new TextEncoder("utf-8").encode(
-                            JSON.stringify({
-                                name: assetName,
-                                description:
-                                    "Randomly generated fractal with embedded ARC69 traits",
-                                external_url: "https://algofractals.com",
-                                standard: "arc69",
-                                mime_type: "image/png",
-                                properties: {
-                                    ID: CARD_TITLE,
-                                    Set: "Manderbrot",
-                                },
-                            })
-                        ),
-                        manager: creatorWallet,
-                        suggestedParams: {
-                            ...params,
-                        },
-                    });
+                    algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject(
+                        assetObject
+                    );
+                console.log(create_frctl_txn);
+
                 const fee_txn =
                     algosdk.makePaymentTxnWithSuggestedParamsFromObject({
                         from: creatorWallet,
@@ -428,9 +303,16 @@ export default {
                         amount: 0.5 * 1e6,
                         note: new TextEncoder("utf-8").encode(title),
                         suggestedParams: {
-                            ...params,
+                            genesisID: paramsJson["genesis-id"],
+                            fee: paramsJson["min-fee"],
+                            firstRound: paramsJson["last-round"],
+                            flatFee: true,
+                            lastRound: paramsJson["last-round"] + 1000,
+                            genesisHash: paramsJson["genesis-hash"],
                         },
                     });
+                console.log(fee_txn);
+
                 const txnsToGroup = [create_frctl_txn, fee_txn];
                 const groupID = algosdk.computeGroupID(txnsToGroup);
                 for (let i = 0; i < 2; i++) txnsToGroup[i].group = groupID;
@@ -448,6 +330,7 @@ export default {
                     5
                 );
             } catch (e) {
+                console.log(e);
                 this.error = "Unable to mint the NFT, please try again!";
             } finally {
                 this.loading = false;

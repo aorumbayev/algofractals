@@ -5,7 +5,6 @@ import { routes } from "./routes.js";
 import { createRouter, createWebHistory } from "vue-router";
 import Particles from "particles.vue3";
 import mitt from "mitt";
-
 const emitter = mitt();
 const app = createApp(App);
 
