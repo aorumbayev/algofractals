@@ -45,7 +45,7 @@
 
             <div class="card-body">
                 <h2 class="card-title text-2xl text-pink-400">
-                    Generate random Fractal NFT
+                    ✨ Random Fractal NFT Generator 🔮
                 </h2>
                 <p class="text-yellow-500">
                     Click mint button to generate a random Fractal, upload it to
