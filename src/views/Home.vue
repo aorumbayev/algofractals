@@ -1,5 +1,11 @@
 <template>
     <div class="flex h-screen pt-6">
+        <Particles
+            class="-z-1 fixed w-full"
+            id="tsparticles"
+            :options="particlesConfig"
+        />
+
         <div
             v-if="isMobile()"
             class="card md:w-8/12 lg:w-6/12 w-9/12 m-auto text-center shadow-2xl rounded-lg border-4 border-black bg-black"
@@ -222,6 +228,45 @@ export default {
             return this.loading
                 ? "btn btn-outline btn-accent loading"
                 : "btn btn-outline btn-accent";
+        },
+        particlesConfig() {
+            return {
+                fpsLimit: 30,
+                particles: {
+                    color: {
+                        value: "#f3fe67",
+                    },
+                    collisions: {
+                        enable: true,
+                    },
+                    move: {
+                        direction: "none",
+                        enable: true,
+                        outMode: "bounce",
+                        random: false,
+                        speed: 2,
+                        straight: false,
+                    },
+                    number: {
+                        density: {
+                            enable: true,
+                            value_area: 800,
+                        },
+                        value: 40,
+                    },
+                    opacity: {
+                        value: 0.5,
+                    },
+                    shape: {
+                        type: "square",
+                    },
+                    size: {
+                        random: true,
+                        value: 5,
+                    },
+                },
+                detectRetina: true,
+            };
         },
         mintButtonClass() {
             return this.loading
