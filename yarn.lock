@@ -51,10 +51,10 @@
   resolved "https://registry.yarnpkg.com/@heroicons/vue/-/vue-1.0.6.tgz#d8b90734b436eb5a87f40cc300b64a0fb0031f7f"
   integrity sha512-ng2YcCQrdoQWEFpw+ipFl2rZo8mZ56v0T5+MyfQQvNqfKChwgP6DMloZLW+rl17GEcHkE3H82UTAMKBKZr4+WA==
 
-"@ipld/car@^3.0.1", "@ipld/car@^3.1.20", "@ipld/car@^3.1.4":
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/@ipld/car/-/car-3.2.3.tgz#5a3fa8576dde476a9d06229e383ded0bb16c859e"
-  integrity sha512-pXE5mFJlXzJVaBwqAJKGlKqMmxq8H2SLEWBJgkeBDPBIN8ZbscPc3I9itkSQSlS/s6Fgx35Ri3LDTDtodQjCCQ==
+"@ipld/car@^3.0.1", "@ipld/car@^3.2.3":
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/@ipld/car/-/car-3.2.4.tgz#115951ba2255ec51d865773a074e422c169fb01c"
+  integrity sha512-rezKd+jk8AsTGOoJKqzfjLJ3WVft7NZNH95f0pfPbicROvzTyvHCNy567HzSUd6gRXZ9im29z5ZEv9Hw49jSYw==
   dependencies:
     "@ipld/dag-cbor" "^7.0.0"
     multiformats "^9.5.4"
@@ -580,21 +580,21 @@
   dependencies:
     "@walletconnect/window-getters" "^1.0.0"
 
-"@web-std/blob@^3.0.0", "@web-std/blob@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@web-std/blob/-/blob-3.0.1.tgz#d2cebb0d8efde619b140fbb22b3ba302edd98125"
-  integrity sha512-opuhO8ZGGUj2jdFwfgMjWjVdKaHlQanGWXxj5wV2YQ1uGTuL/SADnsDitpMfRb+lSpmQyzpwZFfj4CNKQuwSKQ==
+"@web-std/blob@^3.0.0", "@web-std/blob@^3.0.1", "@web-std/blob@^3.0.3":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@web-std/blob/-/blob-3.0.4.tgz#dd67a685547331915428d69e723c7da2015c3fc5"
+  integrity sha512-+dibyiw+uHYK4dX5cJ7HA+gtDAaUUe6JsOryp2ZpAC7h4ICsh49E34JwHoEKPlPvP0llCrNzz45vvD+xX5QDBg==
   dependencies:
     "@web-std/stream" "1.0.0"
     web-encoding "1.1.5"
 
-"@web-std/fetch@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@web-std/fetch/-/fetch-3.0.0.tgz#70de57091eae3e2b23b0eab0e3f4044d4eea029d"
-  integrity sha512-U1b9gjmBZllDL/B+F4eef0Yq2eJDsmPzZOGGOpoMry/bPIUVT0WCIj3PO6jZaGtcQY8JpyiFJa1S8Z4KJJGl0Q==
+"@web-std/fetch@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@web-std/fetch/-/fetch-3.0.3.tgz#507e1371825298aae61172b0da439570437d3982"
+  integrity sha512-PtaKr6qvw2AmKChugzhQWuTa12dpbogHRBxwcleAZ35UhWucnfD4N+g3f7qYK2OeioSWTK3yMf6n/kOOfqxHaQ==
   dependencies:
-    "@web-std/blob" "^3.0.0"
-    "@web-std/form-data" "^3.0.0"
+    "@web-std/blob" "^3.0.3"
+    "@web-std/form-data" "^3.0.2"
     "@web3-storage/multipart-parser" "^1.0.0"
     data-uri-to-buffer "^3.0.1"
 
@@ -605,10 +605,10 @@
   dependencies:
     "@web-std/blob" "^3.0.0"
 
-"@web-std/form-data@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@web-std/form-data/-/form-data-3.0.0.tgz#b68f3b97133b0517fc175c8d0a91e7a7d5fd9ee0"
-  integrity sha512-+Uypn0diE7bXDh0Q1PdTbQ46lm6Ge0t4iZ6cdiTpU4XQHQ/2ZEzqv97Tudi4v2ra/YexN5AHsNotaZoI/tqjCA==
+"@web-std/form-data@^3.0.0", "@web-std/form-data@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@web-std/form-data/-/form-data-3.0.2.tgz#c71d9def6a593138ea92fe3d1ffbce19f43e869c"
+  integrity sha512-rhc8IRw66sJ0FHcnC84kT3mTN6eACTuNftkt1XSl1Ef6WRKq4Pz65xixxqZymAZl1K3USpwhLci4SKNn4PYxWQ==
   dependencies:
     web-encoding "1.1.5"
 
@@ -1689,12 +1689,12 @@ ip-regex@^4.0.0:
   resolved "https://registry.yarnpkg.com/ip-regex/-/ip-regex-4.3.0.tgz#687275ab0f57fa76978ff8f4dddc8a23d5990db5"
   integrity sha512-B9ZWJxHHOHUhUjCPrMpLD4xEq35bUTClHM1S6CBU5ixQnkZmwipwgc96vAd7AAGM9TGHvJR+Uss+/Ak6UphK+Q==
 
-ipfs-car@^0.6.0:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/ipfs-car/-/ipfs-car-0.6.1.tgz#4fab227e41e88110c7e6f827ebeb89385789c7b6"
-  integrity sha512-wB2e009VkWz3OXEFYiT1Vpvn3IJlyGcWJky8NgcgpeY/b5dgNFR8bHlbWhJJQJtys8D16n9TFuGgrROspe1gpw==
+ipfs-car@^0.6.2:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/ipfs-car/-/ipfs-car-0.6.2.tgz#ec645cebe29056344abb3545e4e2e99788a4405c"
+  integrity sha512-tliuakkKKtCa4TTnFT3zJKjq/aD8EGKX8Y0ybCyrAW0fo/n2koZpxiLjBvtTs47Rqyji6ggXo+atPbJJ60hJmg==
   dependencies:
-    "@ipld/car" "^3.1.4"
+    "@ipld/car" "^3.2.3"
     "@web-std/blob" "^3.0.1"
     bl "^5.0.0"
     blockstore-core "^1.0.2"
@@ -1711,7 +1711,7 @@ ipfs-car@^0.6.0:
     it-pipe "^1.1.0"
     meow "^9.0.0"
     move-file "^2.1.0"
-    multiformats "^9.3.0"
+    multiformats "^9.6.3"
     stream-to-it "^0.2.3"
     streaming-iterables "^6.0.0"
     uint8arrays "^3.0.0"
@@ -2349,10 +2349,10 @@ multiaddr@^10.0.0:
     uint8arrays "^3.0.0"
     varint "^6.0.0"
 
-multiformats@^9.0.4, multiformats@^9.3.0, multiformats@^9.4.10, multiformats@^9.4.13, multiformats@^9.4.2, multiformats@^9.4.5, multiformats@^9.4.7, multiformats@^9.5.4:
-  version "9.5.8"
-  resolved "https://registry.yarnpkg.com/multiformats/-/multiformats-9.5.8.tgz#b8b8fa80210b31a96bea2b59c26970b5815e5a5e"
-  integrity sha512-GY154q1yPPdHX4ArXHE8Z1Mm9BxZcJetzEqfwQg/ongo91qIJDHJEio3zboHIKGEvBLrhVqKwlRuDqwa7+xECQ==
+multiformats@^9.0.4, multiformats@^9.4.13, multiformats@^9.4.2, multiformats@^9.4.5, multiformats@^9.4.7, multiformats@^9.5.4, multiformats@^9.6.3, multiformats@^9.6.4:
+  version "9.6.4"
+  resolved "https://registry.yarnpkg.com/multiformats/-/multiformats-9.6.4.tgz#5dce1f11a407dbb69aa612cb7e5076069bb759ca"
+  integrity sha512-fCCB6XMrr6CqJiHNjfFNGT0v//dxOBMrOMqUIzpPc/mmITweLEyhvMpY9bF+jZ9z3vaMAau5E8B68DW77QMXkg==
 
 murmurhash3js-revisited@^3.0.0:
   version "3.0.0"
@@ -2374,20 +2374,20 @@ native-fetch@^3.0.0:
   resolved "https://registry.yarnpkg.com/native-fetch/-/native-fetch-3.0.0.tgz#06ccdd70e79e171c365c75117959cf4fe14a09bb"
   integrity sha512-G3Z7vx0IFb/FQ4JxvtqGABsOTIqRWvgQz6e+erkB+JJD6LrszQtMozEHI4EkmgZQvnGHrpLVzUWk7t4sJCIkVw==
 
-nft.storage@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/nft.storage/-/nft.storage-5.2.0.tgz#9d7c7d0f0585f7b9db609b084fe5d60bbe5c8564"
-  integrity sha512-d84/h+ekhAxcg7/og6DTDli8zeYxZdU3cV5q0yYOfkU7uiOgaUxINiw9E6IpO6fanQK44Zg6ljJMgeqFWQeI+A==
+nft.storage@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/nft.storage/-/nft.storage-6.1.0.tgz#2cba7f5a5097dd518d56ed1c734dcf0b43297344"
+  integrity sha512-7qK9ZRAIWu7Z4dsdYHHL2TkzMIhijxaH37eK8CzP1JmM/wFX3lwTyGHywlGPmWL8pq7OhS8FgMJlmSyMbAVWYA==
   dependencies:
-    "@ipld/car" "^3.1.20"
+    "@ipld/car" "^3.2.3"
     "@ipld/dag-cbor" "^6.0.13"
     "@web-std/blob" "^3.0.1"
-    "@web-std/fetch" "^3.0.0"
+    "@web-std/fetch" "^3.0.3"
     "@web-std/file" "^3.0.0"
     "@web-std/form-data" "^3.0.0"
     carbites "^1.0.6"
-    ipfs-car "^0.6.0"
-    multiformats "^9.4.10"
+    ipfs-car "^0.6.2"
+    multiformats "^9.6.4"
     p-retry "^4.6.1"
     streaming-iterables "^6.0.0"
 

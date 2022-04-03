@@ -19,7 +19,7 @@
         "daisyui": "^1.22.0",
         "lodash": "^4.17.21",
         "mitt": "^3.0.0",
-        "nft.storage": "^5.2.0",
+        "nft.storage": "^6.1.0",
         "particles.vue3": "^1.42.4",
         "path": "^0.12.7",
         "tslib": "^2.3.1",
