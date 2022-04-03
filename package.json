@@ -34,7 +34,7 @@
         "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
         "@heroicons/vue": "1.0.6",
         "@tailwindcss/aspect-ratio": "0.4.0",
-        "@tailwindcss/forms": "0.4.0",
+        "@tailwindcss/forms": "0.5.0",
         "@tailwindcss/line-clamp": "0.3.0",
         "@tailwindcss/typography": "0.5.0",
         "@types/tailwindcss": "3.0.2",
