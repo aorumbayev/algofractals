@@ -444,18 +444,7 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.31.tgz#c90de7126d833dcd3a4c7534d534be2fb41faa4e"
   integrity sha512-ymN2pj6zEjiKJZbrf98UM2pfDd6F2H7ksKw7NDt/ZZ1fh5Ei39X5tABugtT03ZRlWd9imccoK0hE8hpjpU7irQ==
 
-"@walletconnect/browser-utils@^1.6.1":
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/@walletconnect/browser-utils/-/browser-utils-1.7.1.tgz#2a28846cd4d73166debbbf7d470e78ba25616f5e"
-  integrity sha512-y6KvxPhi52sWzS0/HtA3EhdgmtG8mXcxdc26YURDOVC/BJh3MxV8E16JFrT4InylOqYJs6dcSLWVfcnJaiPtZw==
-  dependencies:
-    "@walletconnect/safe-json" "1.0.0"
-    "@walletconnect/types" "^1.7.1"
-    "@walletconnect/window-getters" "1.0.0"
-    "@walletconnect/window-metadata" "1.0.0"
-    detect-browser "5.2.0"
-
-"@walletconnect/browser-utils@^1.7.7":
+"@walletconnect/browser-utils@^1.7.4", "@walletconnect/browser-utils@^1.7.7":
   version "1.7.7"
   resolved "https://registry.yarnpkg.com/@walletconnect/browser-utils/-/browser-utils-1.7.7.tgz#4ae0db1ddf49be179ea556af842db3b7afce973d"
   integrity sha512-6Mt7DSPaG0FKnHhuVzkU1hgtsCpGvl2nfbfRytLpyDY05iWMzMg5uK1DzV+0k4hCt9pVli0JVNt6dh9a6Xm94w==
@@ -561,7 +550,7 @@
     "@walletconnect/utils" "^1.7.7"
     ws "7.5.3"
 
-"@walletconnect/types@^1.6.1", "@walletconnect/types@^1.7.1", "@walletconnect/types@^1.7.7":
+"@walletconnect/types@^1.7.4", "@walletconnect/types@^1.7.7":
   version "1.7.7"
   resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.7.7.tgz#71c623b36a93e373370b1772e82fea2d801adf54"
   integrity sha512-yXJrLxwLLCXtWgd/e8FjfY9v5DKds12Z7EEPzUrPSq6v7WtXpqate577KwlFQ6UYzioQzIEDE8+98j+0aiZbsw==
@@ -691,14 +680,14 @@ algo-msgpack-with-bigint@^2.1.1:
   resolved "https://registry.yarnpkg.com/algo-msgpack-with-bigint/-/algo-msgpack-with-bigint-2.1.1.tgz#38bb717220525b3ff42232eefdcd9efb9ad405d6"
   integrity sha512-F1tGh056XczEaEAqu7s+hlZUDWwOBT70Eq0lfMpBP2YguSQVyxRbprLq5rELXKQOyOaixTWYhMeMQMzP0U5FoQ==
 
-algorand-walletconnect-qrcode-modal@^1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/algorand-walletconnect-qrcode-modal/-/algorand-walletconnect-qrcode-modal-1.6.1.tgz#bdf500f0267fd24dc4cb8b6db7e6995861794453"
-  integrity sha512-094QFlBpaL1qReBEOZE0zd9M7jgwSt092NgWZh61SSAvxDxLHWMv2ZSgh4xHp5GHOsUn1OVX4RrmGaInh99/Mw==
+algorand-walletconnect-qrcode-modal@^1.7.4:
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/algorand-walletconnect-qrcode-modal/-/algorand-walletconnect-qrcode-modal-1.7.4.tgz#8471c2fe579cb028de33d2dbb0182ee52932a5d4"
+  integrity sha512-Xj/zt4O6o3f6H8ikXX5yrwVL+/VVwTpFF4N4daHaoK/HEooAGNdkrJ7vftbjhIrs0N8+b8NUqEcMyYdaCS/CKQ==
   dependencies:
-    "@walletconnect/browser-utils" "^1.6.1"
+    "@walletconnect/browser-utils" "^1.7.4"
     "@walletconnect/mobile-registry" "^1.4.0"
-    "@walletconnect/types" "^1.6.1"
+    "@walletconnect/types" "^1.7.4"
     copy-to-clipboard "^3.3.1"
     preact "10.4.1"
     qrcode "1.4.4"
