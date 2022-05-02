@@ -2,7 +2,7 @@
     <div class="navbar mb-2 shadow-lg bg-neutral text-neutral-content">
         <div class="flex-1 px-2 mx-2">
             <span class="text-lg text-yellow-300 font-bold">
-                AlgoFractals NFT v0.1.0
+                AlgoFractals NFT v0.1.1
             </span>
         </div>
         <label for="my-modal-2" class="btn btn-accent modal-button"
@@ -12,7 +12,7 @@
         <div class="modal">
             <div class="modal-box">
                 <p class="text-xl text-bold text-center">
-                    AlgoFractals NFT v0.1.0
+                    AlgoFractals NFT v0.1.1
                 </p>
                 <p class="text-sm">
                     <br /><br />
