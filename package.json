@@ -16,7 +16,7 @@
         "algorand-walletconnect-qrcode-modal": "1.7.4",
         "algosdk": "1.15.0",
         "buffer": "^6.0.3",
-        "daisyui": "^1.22.0",
+        "daisyui": "^2.3.6",
         "lodash": "^4.17.21",
         "mitt": "^3.0.0",
         "nft.storage": "6.2.0",
