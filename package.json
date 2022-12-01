@@ -20,7 +20,7 @@
         "lodash": "^4.17.21",
         "mitt": "^3.0.0",
         "nft.storage": "6.2.0",
-        "particles.vue3": "^1.22.0",
+        "particles.vue3": "^2.5.3",
         "path": "^0.12.7",
         "safe-buffer": "^5.2.1",
         "tslib": "^2.3.1",
